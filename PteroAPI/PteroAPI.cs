@@ -2,14 +2,14 @@
 
 namespace PteroAPI
 {
-    public class PteroAPI
+    public class Pterodactyl
     {
         public string? APIUrl { get; set; }
         public string? APIKey { get; set; }
         public string? ServerResponseMessage { get; set; }
         public static readonly HttpClient httpClient = new();
 
-        public PteroAPI(string Url, string Key)
+        public Pterodactyl(string Url, string Key)
         {
             APIUrl = Url;
             APIKey = Key;
