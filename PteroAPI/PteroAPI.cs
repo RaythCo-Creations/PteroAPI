@@ -6,8 +6,7 @@ namespace PteroAPI
     {
         public string? APIUrl { get; set; }
         public string? APIKey { get; set; }
-        public string? ServerResponseMessage { get; set; }
-        public static readonly HttpClient httpClient = new();
+        public readonly HttpClient httpClient = new();
 
         public Pterodactyl(string Url, string Key)
         {
@@ -15,7 +14,7 @@ namespace PteroAPI
             APIKey = Key;
         }
 
-        public async Task ConsoleCmdAsync(string server, string command)
+        public async Task<string> ConsoleCmdAsync(string server, string command)
         {
             using HttpRequestMessage request = new(new HttpMethod("POST"), $"{APIUrl}/api/client/servers/{server}/command");
             request.Headers.TryAddWithoutValidation("Content-Type", "application/json");
@@ -24,7 +23,7 @@ namespace PteroAPI
                                     new KeyValuePair<string, string>("command", command),
                                 });
             HttpResponseMessage response = await httpClient.SendAsync(request);
-            return;
+            return await response.Content.ReadAsStringAsync();
         }
 
         public async Task ServerPowerAsync(string server, string power)
@@ -38,56 +37,59 @@ namespace PteroAPI
             HttpResponseMessage response = await httpClient.SendAsync(request);
         }
 
-        public async Task ServerResourcesAsync(string server)
+        public async Task<string> ServerResourcesAsync(string server)
         {
             using HttpRequestMessage request = new(new HttpMethod("GET"), $"{APIUrl}/api/client/servers/{server}/resources");
             request.Headers.TryAddWithoutValidation("Content-Type", "application/json");
             request.Headers.TryAddWithoutValidation("Authorization", $"Bearer {APIKey}");
             HttpResponseMessage response = await httpClient.SendAsync(request);
-            ServerResponseMessage = await response.Content.ReadAsStringAsync();
+            return await response.Content.ReadAsStringAsync();
         }
 
-        public async Task GetFileContents(string server, string file)
+        public async Task<string> GetFileContents(string server, string file)
         {
             using HttpRequestMessage request = new(new HttpMethod("GET"), $"{APIUrl}/api/client/servers/{server}/files/contents?file=%2F{file}");
             request.Headers.TryAddWithoutValidation("Content-Type", "application/json");
             request.Headers.TryAddWithoutValidation("Authorization", $"Bearer {APIKey}");
             HttpResponseMessage response = await httpClient.SendAsync(request);
-            ServerResponseMessage = await response.Content.ReadAsStringAsync();
+            return await response.Content.ReadAsStringAsync();
         }
 
-        public async Task WriteFile(string server, string file, string contents)
+        public async Task<string> WriteFile(string server, string file, string contents)
         {
             using HttpRequestMessage request = new(new HttpMethod("POST"), $"{APIUrl}/api/client/servers/{server}/files/write?file=%2F{file}");
             request.Headers.TryAddWithoutValidation("Content-Type", "application/json");
             request.Headers.TryAddWithoutValidation("Authorization", $"Bearer {APIKey}");
             request.Content = new StringContent(contents, Encoding.UTF8, "application/json");
             HttpResponseMessage response = await httpClient.SendAsync(request);
+            return await response.Content.ReadAsStringAsync();
         }
 
-        public async Task ReinstallServer(string server)
+        public async Task<string> ReinstallServer(string server)
         {
             using HttpRequestMessage request = new(new HttpMethod("POST"), $"{APIUrl}/api/client/servers/{server}/settings/reinstall");
             request.Headers.TryAddWithoutValidation("Content-Type", "application/json");
             request.Headers.TryAddWithoutValidation("Authorization", $"Bearer {APIKey}");
             HttpResponseMessage response = await httpClient.SendAsync(request);
+            return await response.Content.ReadAsStringAsync();
         }
 
-        public async Task CreateBackup(string server)
+        public async Task<string> CreateBackup(string server)
         {
             using HttpRequestMessage request = new(new HttpMethod("POST"), $"{APIUrl}/api/client/servers/{server}/backups");
             request.Headers.TryAddWithoutValidation("Content-Type", "application/json");
             request.Headers.TryAddWithoutValidation("Authorization", $"Bearer {APIKey}");
             HttpResponseMessage response = await httpClient.SendAsync(request);
+            return await response.Content.ReadAsStringAsync();
         }
 
-        public async Task GetWebSocketURI(string server)
+        public async Task<string> GetWebSocketURI(string server)
         {
             using HttpRequestMessage request = new(new HttpMethod("GET"), $"{APIUrl}/api/client/servers/{server}/websocket");
             request.Headers.TryAddWithoutValidation("Content-Type", "application/json");
             request.Headers.TryAddWithoutValidation("Authorization", $"Bearer {APIKey}");
             HttpResponseMessage response = await httpClient.SendAsync(request);
-            ServerResponseMessage = await response.Content.ReadAsStringAsync();
+            return await response.Content.ReadAsStringAsync();
         }
     }
 }
